@@ -1,0 +1,51 @@
+# ------------------
+# GENERAL CONFIGURATION
+# ------------------
+.DS_Store
+*.log
+.vscode/
+
+# Ignore editor swap and backup files (including Vim .swp)
+*.[Ss][Ww][Pp]
+*~
+*.bak
+*.swo
+
+# ------------------
+# PYTHON / DJANGO
+# ------------------
+# Virtual Environment
+venv/
+
+# Cache files
+*.pyc
+__pycache__/
+
+# Local database (SQLite)
+db.sqlite3
+*.sqlite3
+
+# Django configuration files (local secrets)
+local_settings.py
+.env
+
+# Static files collection directory
+/static_root/
+
+# ------------------
+# NODE / NEXT.JS
+# ------------------
+# Module directories and cache
+/frontend/node_modules
+/frontend/.next
+/frontend/out
+
+# Debug and log files
+npm-debug.log*
+yarn-debug.log*
+
+# ------------------
+# LOCAL CUSTOMIZATION (for you)
+# ------------------
+# Ignore VS Code local settings folder (optional)
+# .vscode/
