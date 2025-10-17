@@ -8,15 +8,15 @@ The main objective is to demonstrate my ability to build scalable, secure, Full-
 
 ✨ Key Features
 
-    Secure Authentication (DRF-JWT): User registration and login powered by JSON Web Tokens (JWT).
+Secure Authentication (DRF-JWT): User registration and login powered by JSON Web Tokens (JWT).
 
-    Post Management (CRUD): Full functionality to Create, Read, Update, and Delete blog posts.
+Post Management (CRUD): Full functionality to Create, Read, Update, and Delete blog posts.
 
-    Access Control: Only the author of a post can edit or delete their own content.
+Access Control: Only the author of a post can edit or delete their own content.
 
-    Performance: Frontend utilizes Next.js for Server-Side Rendering (SSR) for better SEO and performance.
+Performance: Frontend utilizes Next.js for Server-Side Rendering (SSR) for better SEO and performance.
 
-    Professional Design: Clean and responsive user interface built using Tailwind CSS and shadcn/ui components.
+Professional Design: Clean and responsive user interface built using Tailwind CSS and shadcn/ui components.
 
 ## 🛠️ Tech Stack
 
