@@ -1,6 +1,13 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { api } from "../utils/api";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 interface AuthTokens {
   access: string;
@@ -24,15 +31,53 @@ interface AuthContextType {
   isAuthenticated: boolean;
 }
 
+interface JWTPayload {
+  user_id?: number; // O id, dependiendo de tu backend
+  username?: string;
+  exp: number; // Expiración (timestamp)
+  iat: number; // Emitido en (timestamp)
+  // Puedes añadir más campos si los usas
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const getUserFromToken = (token: string): User | null => {
+  try {
+    const decodedToken: JWTPayload = jwtDecode(token);
+    return { username: decodedToken.username || "Usuario desconocido" };
+  } catch (error) {
+    console.log("Error on decoding token:", error);
+    return null;
+  }
+};
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [tokens, setTokens] = useState<AuthTokens | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window !== "undefined") {
+      const storedTokens = localStorage.getItem("authTokens");
+
+      if (storedTokens) {
+        const parsedTokens = JSON.parse(storedTokens);
+        return getUserFromToken(parsedTokens.access);
+      }
+    }
+
+    return null;
+  });
+
+  const [tokens, setTokens] = useState<AuthTokens | null>(() => {
+    if (typeof window !== "undefined") {
+      const storedTokens = localStorage.getItem("authTokens");
+      return storedTokens ? JSON.parse(storedTokens) : null;
+    }
+
+    return null;
+  });
+
   const router = useRouter();
 
   const login = async (credentials: Credentials) => {
@@ -41,7 +86,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const newTokens: AuthTokens = response.data;
 
       setTokens(newTokens);
-      setUser({ username: credentials.username });
+      localStorage.setItem("authTokens", JSON.stringify(newTokens));
+
+      const loggedInUser = getUserFromToken(newTokens.access);
+      setUser(loggedInUser);
       router.push("/dashboard");
     } catch (error) {
       console.log("Login failed", error);
@@ -52,8 +100,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setTokens(null);
     setUser(null);
+    localStorage.removeItem("authTokens");
     router.push("/login");
   };
+
+  useEffect(() => {
+    if (tokens && !user) {
+      const loadedUser = getUserFromToken(tokens.access);
+      setUser(loadedUser);
+    }
+  }, [tokens, user]);
 
   const isAuthenticated = !!user && !!tokens;
 
