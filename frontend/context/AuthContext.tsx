@@ -23,12 +23,13 @@ interface Credentials {
   password: string;
 }
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   tokens: AuthTokens | null;
   login: (credentials: Credentials) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  refreshAccessToken: (refreshToken: string) => Promise<string>;
 }
 
 interface JWTPayload {
@@ -113,9 +114,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = !!user && !!tokens;
 
+  const refreshAccessToken = async (refreshToken: string): Promise<string> => {
+    try {
+      const response = await api.post("/token/refresh/", {
+        refresh: refreshToken,
+      });
+
+      const newAccess: string = response.data.access;
+      setTokens((prev) => {
+        if (!prev) return null;
+        const newTokens = { ...prev, access: newAccess };
+        localStorage.setItem("authTokens", JSON.stringify(newTokens));
+        return newTokens;
+      });
+
+      return newAccess;
+    } catch (error) {
+      console.error("Error al refrescar el token:", error);
+      logout();
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, tokens, login, logout, isAuthenticated }}
+      value={{
+        user,
+        tokens,
+        login,
+        logout,
+        isAuthenticated,
+        refreshAccessToken,
+      }}
     >
       {children}
     </AuthContext.Provider>
