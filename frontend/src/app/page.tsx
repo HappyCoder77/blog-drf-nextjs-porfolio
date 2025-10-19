@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PostList from "../../components/PostList";
 
 export default function HomePage() {
   return (
@@ -23,6 +24,9 @@ export default function HomePage() {
         >
           Go to Dashboard (Protected Route)
         </Link>
+      </div>
+      <div className="max-w-4xl mx-auto">
+        <PostList />
       </div>
     </div>
   );
