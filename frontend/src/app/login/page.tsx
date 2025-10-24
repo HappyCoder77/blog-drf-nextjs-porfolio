@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -10,8 +11,21 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const router = useRouter();
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
+
   if (isAuthenticated) {
-    return <p>You&aposre already authenticated. Redirecting...</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-xl text-gray-600">
+          You&apos;re already authenticated. Redirecting...
+        </p>
+      </div>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
